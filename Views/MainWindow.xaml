@@ -1,0 +1,390 @@
+﻿<Window x:Class="CVSSCalculator.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:local="clr-namespace:CVSSCalculator"
+        mc:Ignorable="d"
+        Title="CVSS Calculator" Height="575" Width="800" ShowInTaskbar="True" ResizeMode="CanMinimize" MaxHeight="575" MaxWidth="800" Visibility="Hidden">
+    <Window.Resources>
+    </Window.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="10,10,10,0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border CornerRadius="5" Background="#263e80" Grid.ColumnSpan="2">
+                    <TextBlock Text="Base Score"
+                               Margin="5,0,0,0"
+                               Padding="2,2,2,2"
+                               Style="{StaticResource Header}"/>
+                </Border>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="1"
+                    Grid.Column="0">
+                    <TextBlock Text="Attack Vector (AV)"
+                               Padding="0,5,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Network (N)"
+                                Command="{Binding SetAttackVector}"
+                                CommandParameter="N"
+                                GroupName="AttackVector"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Adjacent (A)"
+                                Command="{Binding SetAttackVector}"
+                                CommandParameter="A"
+                                GroupName="AttackVector"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Local (L)"
+                                Command="{Binding SetAttackVector}"
+                                CommandParameter="L"         
+                                GroupName="AttackVector"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Physical (P)"
+                                Command="{Binding SetAttackVector}"
+                                CommandParameter="P"
+                                GroupName="AttackVector"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="2"
+                    Grid.Column="0">
+                    <TextBlock Text="Attack Complexity (AC)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Low (L)"
+                                Command="{Binding SetAttackComplexity}"
+                                CommandParameter="L"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                Command="{Binding SetAttackComplexity}"
+                                CommandParameter="H"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="3"
+                    Grid.Column="0">
+                    <TextBlock Text="Privileges Required (PR)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="None (N)"
+                                Command="{Binding SetPrivileges}"
+                                CommandParameter="N"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Low (L)"
+                                Command="{Binding SetPrivileges}"
+                                CommandParameter="L"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                Command="{Binding SetPrivileges}"
+                                CommandParameter="H"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="4"
+                    Grid.Column="0">
+                    <TextBlock Text="User Interaction (UI)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="None (N)"
+                                Command="{Binding SetUserInteraction}"
+                                CommandParameter="N"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Required (R)"
+                                Command="{Binding SetUserInteraction}"
+                                CommandParameter="R"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="100,0,0,0">
+                    <TextBlock Text="Scope (S)"
+                               Padding="0,5,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Unchanged (U)"
+                                Command="{Binding SetScope}"
+                                CommandParameter="U"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Changed (C)"
+                                Command="{Binding SetScope}"
+                                CommandParameter="C"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="100,0,0,0">
+                    <TextBlock Text="Confidentiality (C)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="None (N)"
+                                Command="{Binding SetConfidentiality}"
+                                CommandParameter="N"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Low (L)"
+                                Command="{Binding SetConfidentiality}"
+                                CommandParameter="L"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                Command="{Binding SetConfidentiality}"
+                                CommandParameter="H"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="100,0,0,0">
+                    <TextBlock Text="Integrity (I)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="None (N)"
+                                Command="{Binding SetIntegrity}"
+                                CommandParameter="N"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Low (L)"
+                                 Command="{Binding SetIntegrity}"
+                                CommandParameter="L"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                Command="{Binding SetIntegrity}"
+                                CommandParameter="H"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Margin="100,0,0,0">
+                    <TextBlock Text="Availability (A)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="None (N)"
+                                Command="{Binding SetAvailability}"
+                                CommandParameter="N"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Low (L)"
+                                Command="{Binding SetAvailability}"
+                                CommandParameter="L"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                Command="{Binding SetAvailability}"
+                                CommandParameter="H"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1"
+                  Margin="0,15,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border CornerRadius="5" Background="#263e80" Grid.ColumnSpan="3">
+                    <TextBlock Text="Temporal Score"
+                               Margin="5,0,0,0"
+                               Padding="2,2,2,2"
+                               Style="{StaticResource Header}"/>
+                </Border>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="1"
+                    Grid.Column="0">
+                    <TextBlock Text="Exploit Code Maturity (E)"
+                               Padding="0,5,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Not Defined (X)"
+                                     Command="{Binding SetExploitCodeMaturity}"
+                                     CommandParameter="X"
+                                    GroupName="ExploitCodeMaturity"
+                                    Style="{StaticResource MetricButton}"
+                                     IsChecked="True"/>
+                        <RadioButton Content="Unproven (U)"
+                                GroupName="ExploitCodeMaturity"
+                                     Command="{Binding SetExploitCodeMaturity}"
+                                     CommandParameter="U"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Proof of Concept (P)"
+                                     Command="{Binding SetExploitCodeMaturity}"
+                                     CommandParameter="P"
+                                GroupName="ExploitCodeMaturity"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Functional (F)"
+                                     Command="{Binding SetExploitCodeMaturity}"
+                                     CommandParameter="F"
+                                GroupName="ExploitCodeMaturity"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="High (H)"
+                                     Command="{Binding SetExploitCodeMaturity}"
+                                     CommandParameter="H"
+                                GroupName="ExploitCodeMaturity"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="2"
+                    Grid.Column="0">
+                    <TextBlock Text="Remediation Level (RL)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Not Defined (X)"
+                                     Command="{Binding SetRemediationLevel}"
+                                     CommandParameter="X"
+                                     GroupName="RemediationLevel"
+                                     IsChecked="True"
+                                     Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Official Fix (O)"
+                                     Command="{Binding SetRemediationLevel}"
+                                     CommandParameter="O"
+                                     GroupName="RemediationLevel"
+                                     Margin="10,0,0,0"
+                                     Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Temporary Fix (T)"
+                                     Command="{Binding SetRemediationLevel}"
+                                     CommandParameter="T"
+                                     GroupName="RemediationLevel"
+                                     Margin="10,0,0,0"
+                                     Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Workaround (W)"
+                                     Command="{Binding SetRemediationLevel}"
+                                     CommandParameter="W"
+                                     GroupName="RemediationLevel"
+                                     Margin="10,0,0,0"
+                                     Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Unavailable (U)"
+                                     Command="{Binding SetRemediationLevel}"
+                                     CommandParameter="U"
+                                     GroupName="RemediationLevel"
+                                     Margin="10,0,0,0"
+                                     Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel 
+                    Orientation="Vertical"
+                    Grid.Row="3"
+                    Grid.Column="0">
+                    <TextBlock Text="Report Confidence (RC)"
+                               Padding="0,10,0,5"/>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <RadioButton Content="Not Defined (X)"
+                                     Command="{Binding SetReportConfidence}"
+                                     CommandParameter="X"
+                                     IsChecked="True"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Unknown (U)"
+                                     Command="{Binding SetReportConfidence}"
+                                     CommandParameter="U"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Reasonable (R)"
+                                     Command="{Binding SetReportConfidence}"
+                                     CommandParameter="R"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                        <RadioButton Content="Confirmed (C)"
+                                     Command="{Binding SetReportConfidence}"
+                                     CommandParameter="C"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource MetricButton}"/>
+                    </StackPanel>
+                </StackPanel>
+                <Grid Grid.Column="1"
+                      Grid.RowSpan="5"
+                      Grid.ColumnSpan="2">
+                    <Border CornerRadius="90"
+                            Background="{Binding CvssColour, UpdateSourceTrigger=PropertyChanged}"
+                            Grid.ColumnSpan="2"
+                            Height="100"
+                            Width="100"
+                            Margin="0,10,0,0"
+                            Visibility="{Binding CvssScoreVisibility}"/>
+                    <TextBlock Text="{Binding BaseScore}"
+                                   Margin="5,0,0,0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource CVSSScore}"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="2">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Vector String:" Visibility="{Binding CvssScoreVisibility}" Foreground="{Binding CvssColour}" FontWeight="Medium" ToolTip="Double click to copy.">
+                        <Label.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CopyToClipboard}"/>
+                        </Label.InputBindings>
+                    </Label>
+                    <Label  Content="{Binding CvssString}" Visibility="{Binding CvssScoreVisibility}" Foreground="{Binding CvssColour}" FontWeight="Medium" ToolTip="Double click to copy.">
+                        <Label.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CopyToClipboard}"/>
+                        </Label.InputBindings>
+                    </Label>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</Window>
