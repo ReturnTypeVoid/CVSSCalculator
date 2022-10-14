@@ -3,10 +3,22 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:CVSSCalculator"
         mc:Ignorable="d"
         Title="CVSS Calculator" Height="575" Width="800" ShowInTaskbar="True" ResizeMode="CanMinimize" MaxHeight="575" MaxWidth="800" Visibility="Hidden">
     <Window.Resources>
+        <Style TargetType="ToolTip">
+            <Style.Resources>
+                <Style TargetType="ContentPresenter">
+                    <Style.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="Foreground"   Value="Black"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </Style.Resources>
+            <Setter Property="MaxWidth" Value="500" />
+        </Style>
     </Window.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="10,10,10,0">
         <Grid>
@@ -28,204 +40,128 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Border CornerRadius="5" Background="#263e80" Grid.ColumnSpan="2">
-                    <TextBlock Text="Base Score"
-                               Margin="5,0,0,0"
-                               Padding="2,2,2,2"
-                               Style="{StaticResource Header}"/>
+                    <TextBlock
+                        Text="Base Score"
+                        Margin="5,0,0,0"
+                        Padding="2,2,2,2"
+                        Style="{StaticResource Header}"/>
                 </Border>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="1"
-                    Grid.Column="0">
-                    <TextBlock Text="Attack Vector (AV)"
-                               Padding="0,5,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Network (N)"
-                                Command="{Binding SetAttackVector}"
-                                CommandParameter="N"
-                                GroupName="AttackVector"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Adjacent (A)"
-                                Command="{Binding SetAttackVector}"
-                                CommandParameter="A"
-                                GroupName="AttackVector"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Local (L)"
-                                Command="{Binding SetAttackVector}"
-                                CommandParameter="L"         
-                                GroupName="AttackVector"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Physical (P)"
-                                Command="{Binding SetAttackVector}"
-                                CommandParameter="P"
-                                GroupName="AttackVector"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+                    <TextBlock
+                        Text="Attack Vector (AV)"
+                        Padding="0,5,0,5"
+                        ToolTip="This metric reflects the context by which vulnerability exploitation is possible. The Base Score increases the more remote (logically, and physically) an attacker can be in order to exploit the vulnerable component."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Network (N)"                            Command="{Binding SetAttackVector}"                            CommandParameter="N"                            GroupName="AttackVector"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed, up to and including the entire Internet. Such a vulnerability is often termed 'remotely exploitable' and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers)."/>
+                        <RadioButton                            Content="Adjacent (A)"                            Command="{Binding SetAttackVector}"                            CommandParameter="A"                            GroupName="AttackVector"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone)."/>
+                        <RadioButton                             Content="Local (L)"                            Command="{Binding SetAttackVector}"                            CommandParameter="L"                                     GroupName="AttackVector"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="The vulnerable component is not bound to the network stack and the attacker's path is via read/write/execute capabilities. Either: the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); or the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., tricking a legitimate user into opening a malicious document)."/>
+                        <RadioButton                            Content="Physical (P)"                            Command="{Binding SetAttackVector}"                            CommandParameter="P"                            GroupName="AttackVector"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief or persistent."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="2"
-                    Grid.Column="0">
-                    <TextBlock Text="Attack Complexity (AC)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Low (L)"
-                                Command="{Binding SetAttackComplexity}"
-                                CommandParameter="L"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                Command="{Binding SetAttackComplexity}"
-                                CommandParameter="H"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
+                    <TextBlock
+                        Text="Attack Complexity (AC)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that configuration."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Low (L)"                            Command="{Binding SetAttackComplexity}"                            CommandParameter="L"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success against the vulnerable component."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetAttackComplexity}"                            CommandParameter="H"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected. For example, a successful attack may require an attacker to: gather knowledge about the environment in which the vulnerable target/component exists; prepare the target environment to improve exploit reliability; or inject themselves into the logical network path between the target and the resource requested by the victim in order to read and/or modify network communications (e.g., a man in the middle attack)."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="3"
-                    Grid.Column="0">
-                    <TextBlock Text="Privileges Required (PR)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="None (N)"
-                                Command="{Binding SetPrivileges}"
-                                CommandParameter="N"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Low (L)"
-                                Command="{Binding SetPrivileges}"
-                                CommandParameter="L"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                Command="{Binding SetPrivileges}"
-                                CommandParameter="H"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
+                    <TextBlock 
+                        Text="Privileges Required (PR)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric describes the level of privileges an attacker must possess before successfully exploiting the vulnerability."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="None (N)"                            Command="{Binding SetPrivileges}"                            CommandParameter="N"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files to carry out an attack."/>
+                        <RadioButton                            Content="Low (L)"                            Command="{Binding SetPrivileges}"                            CommandParameter="L"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The attacker is authorized with (i.e., requires) privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges may have the ability to cause an impact only to non-sensitive resources."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetPrivileges}"                            CommandParameter="H"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The attacker is authorized with (i.e., requires) privileges that provide significant (e.g., administrative) control over the vulnerable component that could affect component-wide settings and files."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="4"
-                    Grid.Column="0">
-                    <TextBlock Text="User Interaction (UI)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="None (N)"
-                                Command="{Binding SetUserInteraction}"
-                                CommandParameter="N"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Required (R)"
-                                Command="{Binding SetUserInteraction}"
-                                CommandParameter="R"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="0">
+                    <TextBlock 
+                        Text="User Interaction (UI)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric captures the requirement for a user, other than the attacker, to participate in the successful compromise the vulnerable component. This metric determines whether the vulnerability can be exploited solely at the will of the attacker, or whether a separate user (or user-initiated process) must participate in some manner."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                             Content="None (N)"                            Command="{Binding SetUserInteraction}"                            CommandParameter="N"                            Style="{StaticResource MetricButton}"
+                            ToolTip="The vulnerable system can be exploited without any interaction from any user."/>
+                        <RadioButton                             Content="Required (R)"                            Command="{Binding SetUserInteraction}"                            CommandParameter="R"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited.    "/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="100,0,0,0">
-                    <TextBlock Text="Scope (S)"
-                               Padding="0,5,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Unchanged (U)"
-                                Command="{Binding SetScope}"
-                                CommandParameter="U"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Changed (C)"
-                                Command="{Binding SetScope}"
-                                CommandParameter="C"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Margin="100,0,0,0">
+                    <TextBlock
+                        Text="Scope (S)"
+                        Padding="0,5,0,5"
+                        ToolTip="Does a successful attack impact a component other than the vulnerable component? If so, the Base Score increases and the Confidentiality, Integrity and Authentication metrics should be scored relative to the impacted component."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Unchanged (U)"                            Command="{Binding SetScope}"                            CommandParameter="U"                            Style="{StaticResource MetricButton}"
+                            ToolTip="An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority."/>
+                        <RadioButton                             Content="Changed (C)"                            Command="{Binding SetScope}"                            CommandParameter="C"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Margin="100,0,0,0">
-                    <TextBlock Text="Confidentiality (C)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="None (N)"
-                                Command="{Binding SetConfidentiality}"
-                                CommandParameter="N"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Low (L)"
-                                Command="{Binding SetConfidentiality}"
-                                CommandParameter="L"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                Command="{Binding SetConfidentiality}"
-                                CommandParameter="H"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="1" Margin="100,0,0,0">
+                    <TextBlock
+                        Text="Confidentiality (C)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability. Confidentiality refers to limiting information access and disclosure to only authorized users, as well as preventing access by, or disclosure to, unauthorized ones."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="None (N)"                            Command="{Binding SetConfidentiality}"                            CommandParameter="N"                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is no loss of confidentiality within the impacted component."/>
+                        <RadioButton                            Content="Low (L)"                            Command="{Binding SetConfidentiality}"                            CommandParameter="L"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetConfidentiality}"                            CommandParameter="H"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Margin="100,0,0,0">
-                    <TextBlock Text="Integrity (I)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="None (N)"
-                                Command="{Binding SetIntegrity}"
-                                CommandParameter="N"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Low (L)"
-                                 Command="{Binding SetIntegrity}"
-                                CommandParameter="L"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                Command="{Binding SetIntegrity}"
-                                CommandParameter="H"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel  Orientation="Vertical" Grid.Row="3" Grid.Column="1" Margin="100,0,0,0">
+                    <TextBlock
+                        Text="Integrity (I)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="None (N)"                            Command="{Binding SetIntegrity}"                            CommandParameter="N"                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is no loss of integrity within the impacted component."/>
+                        <RadioButton                            Content="Low (L)"                            Command="{Binding SetIntegrity}"                            CommandParameter="L"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetIntegrity}"                            CommandParameter="H"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Margin="100,0,0,0">
-                    <TextBlock Text="Availability (A)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="None (N)"
-                                Command="{Binding SetAvailability}"
-                                CommandParameter="N"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Low (L)"
-                                Command="{Binding SetAvailability}"
-                                CommandParameter="L"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                Command="{Binding SetAvailability}"
-                                CommandParameter="H"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="1" Margin="100,0,0,0">
+                    <TextBlock
+                        Text="Availability (A)"
+                        Padding="0,10,0,5"
+                        ToolTip="This metric measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability. It refers to the loss of availability of the impacted component itself, such as a networked service (e.g., web, database, email). Since availability refers to the accessibility of information resources, attacks that consume network bandwidth, processor cycles, or disk space all impact the availability of an impacted component."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="None (N)"                            Command="{Binding SetAvailability}"                            CommandParameter="N"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="There is no impact to availability within the impacted component."/>
+                        <RadioButton                            Content="Low (L)"                            Command="{Binding SetAvailability}"                            CommandParameter="L"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetAvailability}"                            CommandParameter="H"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"                            
+                            ToolTip="There is total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable)."/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="1"
-                  Margin="0,15,0,0">
+            <Grid Grid.Row="1" Margin="0,15,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -239,146 +175,100 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Border CornerRadius="5" Background="#263e80" Grid.ColumnSpan="3">
-                    <TextBlock Text="Temporal Score"
-                               Margin="5,0,0,0"
-                               Padding="2,2,2,2"
-                               Style="{StaticResource Header}"/>
+                    <TextBlock
+                        Text="Temporal Score"
+                        Margin="5,0,0,0"
+                        Padding="2,2,2,2"
+                        Style="{StaticResource Header}"/>
                 </Border>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="1"
-                    Grid.Column="0">
-                    <TextBlock Text="Exploit Code Maturity (E)"
-                               Padding="0,5,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Not Defined (X)"
-                                     Command="{Binding SetExploitCodeMaturity}"
-                                     CommandParameter="X"
-                                    GroupName="ExploitCodeMaturity"
-                                    Style="{StaticResource MetricButton}"
-                                     IsChecked="True"/>
-                        <RadioButton Content="Unproven (U)"
-                                GroupName="ExploitCodeMaturity"
-                                     Command="{Binding SetExploitCodeMaturity}"
-                                     CommandParameter="U"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Proof of Concept (P)"
-                                     Command="{Binding SetExploitCodeMaturity}"
-                                     CommandParameter="P"
-                                GroupName="ExploitCodeMaturity"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Functional (F)"
-                                     Command="{Binding SetExploitCodeMaturity}"
-                                     CommandParameter="F"
-                                GroupName="ExploitCodeMaturity"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="High (H)"
-                                     Command="{Binding SetExploitCodeMaturity}"
-                                     CommandParameter="H"
-                                GroupName="ExploitCodeMaturity"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+                    <TextBlock
+                        Text="Exploit Code Maturity (E)"
+                        Padding="0,5,0,5"
+                        ToolTip="This metric measures the likelihood of the vulnerability being attacked, and is typically based on the current state of exploit techniques, exploit code availability, or active, 'in-the-wild' exploitation."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Not Defined (X)"                            Command="{Binding SetExploitCodeMaturity}"                            CommandParameter="X"                            GroupName="ExploitCodeMaturity"                                                        Style="{StaticResource MetricButton}"                            ToolTip="Assigning this value indicates there is insufficient information to choose one of the other values, and has no impact on the overall Temporal Score, i.e., it has the same effect on scoring as assigning High."                            IsChecked="True"/>
+                        <RadioButton                            Content="Unproven (U)"                            GroupName="ExploitCodeMaturity"                            Command="{Binding SetExploitCodeMaturity}"                            CommandParameter="U"                            Margin="10,0,0,0"                                                        Style="{StaticResource MetricButton}"                            ToolTip="No exploit code is available, or an exploit is theoretical."/>
+                        <RadioButton                            Content="Proof of Concept (P)"                            Command="{Binding SetExploitCodeMaturity}"                            CommandParameter="P"
+                            GroupName="ExploitCodeMaturity"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Proof-of-concept exploit code is available, or an attack demonstration is not practical for most systems. The code or technique is not functional in all situations and may require substantial modification by a skilled attacker."/>
+                        <RadioButton                            Content="Functional (F)"                            Command="{Binding SetExploitCodeMaturity}"                            CommandParameter="F"
+                            GroupName="ExploitCodeMaturity"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Functional exploit code is available. The code works in most situations where the vulnerability exists."/>
+                        <RadioButton                            Content="High (H)"                            Command="{Binding SetExploitCodeMaturity}"                            CommandParameter="H"
+                            GroupName="ExploitCodeMaturity"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Functional autonomous code exists, or no exploit is required (manual trigger) and details are widely available. Exploit code works in every situation, or is actively being delivered via an autonomous agent (such as a worm or virus). Network-connected systems are likely to encounter scanning or exploitation attempts. Exploit development has reached the level of reliable, widely-available, easy-to-use automated tools."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="2"
-                    Grid.Column="0">
-                    <TextBlock Text="Remediation Level (RL)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Not Defined (X)"
-                                     Command="{Binding SetRemediationLevel}"
-                                     CommandParameter="X"
-                                     GroupName="RemediationLevel"
-                                     IsChecked="True"
-                                     Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Official Fix (O)"
-                                     Command="{Binding SetRemediationLevel}"
-                                     CommandParameter="O"
-                                     GroupName="RemediationLevel"
-                                     Margin="10,0,0,0"
-                                     Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Temporary Fix (T)"
-                                     Command="{Binding SetRemediationLevel}"
-                                     CommandParameter="T"
-                                     GroupName="RemediationLevel"
-                                     Margin="10,0,0,0"
-                                     Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Workaround (W)"
-                                     Command="{Binding SetRemediationLevel}"
-                                     CommandParameter="W"
-                                     GroupName="RemediationLevel"
-                                     Margin="10,0,0,0"
-                                     Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Unavailable (U)"
-                                     Command="{Binding SetRemediationLevel}"
-                                     CommandParameter="U"
-                                     GroupName="RemediationLevel"
-                                     Margin="10,0,0,0"
-                                     Style="{StaticResource MetricButton}"/>
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
+                    <TextBlock
+                        Text="Remediation Level (RL)"
+                        Padding="0,10,0,5"
+                        ToolTip="The Remediation Level of a vulnerability is an important factor for prioritization. The typical vulnerability is unpatched when initially published. Workarounds or hotfixes may offer interim remediation until an official patch or upgrade is issued. Each of these respective stages adjusts the temporal score downwards, reflecting the decreasing urgency as remediation becomes final."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Not Defined (X)"                            Command="{Binding SetRemediationLevel}"                            CommandParameter="X"                            GroupName="RemediationLevel"                            IsChecked="True"                            Style="{StaticResource MetricButton}"                            ToolTip="Assigning this value indicates there is insufficient information to choose one of the other values, and has no impact on the overall Temporal Score, i.e., it has the same effect on scoring as assigning Unavailable."/>
+                        <RadioButton                            Content="Official Fix (O)"                            Command="{Binding SetRemediationLevel}"                            CommandParameter="O"                            GroupName="RemediationLevel"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"                            ToolTip="A complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available."/>
+                        <RadioButton                            Content="Temporary Fix (T)"                            Command="{Binding SetRemediationLevel}"                            CommandParameter="T"                            GroupName="RemediationLevel"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"                            ToolTip="There is an official but temporary fix available. This includes instances where the vendor issues a temporary hotfix, tool, or workaround."/>
+                        <RadioButton                            Content="Workaround (W)"                            Command="{Binding SetRemediationLevel}"                            CommandParameter="W"                            GroupName="RemediationLevel"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"                            ToolTip="There is an unofficial, non-vendor solution available. In some cases, users of the affected technology will create a patch of their own or provide steps to work around or otherwise mitigate the vulnerability."/>
+                        <RadioButton                            Content="Unavailable (U)"                            Command="{Binding SetRemediationLevel}"                            CommandParameter="U"                            GroupName="RemediationLevel"                            Margin="10,0,0,0"                            Style="{StaticResource MetricButton}"                            ToolTip="There is either no solution available or it is impossible to apply."/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
-                    Orientation="Vertical"
-                    Grid.Row="3"
-                    Grid.Column="0">
+                <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
                     <TextBlock Text="Report Confidence (RC)"
-                               Padding="0,10,0,5"/>
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <RadioButton Content="Not Defined (X)"
-                                     Command="{Binding SetReportConfidence}"
-                                     CommandParameter="X"
-                                     IsChecked="True"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Unknown (U)"
-                                     Command="{Binding SetReportConfidence}"
-                                     CommandParameter="U"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Reasonable (R)"
-                                     Command="{Binding SetReportConfidence}"
-                                     CommandParameter="R"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
-                        <RadioButton Content="Confirmed (C)"
-                                     Command="{Binding SetReportConfidence}"
-                                     CommandParameter="C"
-                                Margin="10,0,0,0"
-                                Style="{StaticResource MetricButton}"/>
+                        Padding="0,10,0,5"
+                        ToolTip="This metric measures the degree of confidence in the existence of the vulnerability and the credibility of the known technical details. Sometimes only the existence of vulnerabilities are publicized, but without specific details. For example, an impact may be recognized as undesirable, but the root cause may not be known. The vulnerability may later be corroborated by research which suggests where the vulnerability may lie, though the research may not be certain. Finally, a vulnerability may be confirmed through acknowledgement by the author or vendor of the affected technology. The urgency of a vulnerability is higher when a vulnerability is known to exist with certainty. This metric also suggests the level of technical knowledge available to would-be attackers."/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton                            Content="Not Defined (X)"                            Command="{Binding SetReportConfidence}"                            CommandParameter="X"                            IsChecked="True"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Assigning this value indicates there is insufficient information to choose one of the other values, and has no impact on the overall Temporal Score, i.e., it has the same effect on scoring as assigning Confirmed."/>
+                        <RadioButton                            Content="Unknown (U)"                            Command="{Binding SetReportConfidence}"                            CommandParameter="U"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="There are reports of impacts that indicate a vulnerability is present. The reports indicate that the cause of the vulnerability is unknown, or reports may differ on the cause or impacts of the vulnerability. Reporters are uncertain of the true nature of the vulnerability, and there is little confidence in the validity of the reports or whether a static Base score can be applied given the differences described. An example is a bug report which notes that an intermittent but non-reproducible crash occurs, with evidence of memory corruption suggesting that denial of service, or possible more serious impacts, may result."/>
+                        <RadioButton                            Content="Reasonable (R)"                            Command="{Binding SetReportConfidence}"                            CommandParameter="R"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Significant details are published, but researchers either do not have full confidence in the root cause, or do not have access to source code to fully confirm all of the interactions that may lead to the result. Reasonable confidence exists, however, that the bug is reproducible and at least one impact is able to be verified (Proof-of-concept exploits may provide this). An example is a detailed write-up of research into a vulnerability with an explanation (possibly obfuscated or 'left as an exercise to the reader') that gives assurances on how to reproduce the results."/>
+                        <RadioButton                            Content="Confirmed (C)"                            Command="{Binding SetReportConfidence}"                            CommandParameter="C"                            Margin="10,0,0,0"
+                            Style="{StaticResource MetricButton}"
+                            ToolTip="Detailed reports exist, or functional reproduction is possible (functional exploits may provide this). Source code is available to independently verify the assertions of the research, or the author or vendor of the affected code has confirmed the presence of the vulnerability.  "/>
                     </StackPanel>
                 </StackPanel>
-                <Grid Grid.Column="1"
-                      Grid.RowSpan="5"
-                      Grid.ColumnSpan="2">
-                    <Border CornerRadius="90"
-                            Background="{Binding CvssColour, UpdateSourceTrigger=PropertyChanged}"
-                            Grid.ColumnSpan="2"
-                            Height="100"
-                            Width="100"
-                            Margin="0,10,0,0"
-                            Visibility="{Binding CvssScoreVisibility}"/>
-                    <TextBlock Text="{Binding BaseScore}"
-                                   Margin="5,0,0,0"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Style="{StaticResource CVSSScore}"/>
+                <Grid Grid.Column="1" Grid.RowSpan="5" Grid.ColumnSpan="2">
+                    <Border
+                        CornerRadius="90"
+                        Background="{Binding CvssColour, UpdateSourceTrigger=PropertyChanged}"
+                        Grid.ColumnSpan="2"
+                        Height="100"
+                        Width="100"
+                        Margin="0,10,0,0"
+                        Visibility="{Binding CvssScoreVisibility}"/>
+                    <TextBlock                        Text="{Binding BaseScore}"                        Margin="5,0,0,0"                        HorizontalAlignment="Center"                        VerticalAlignment="Center"
+                        Style="{StaticResource CVSSScore}"/>
                 </Grid>
             </Grid>
             <Grid Grid.Row="2">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Vector String:" Visibility="{Binding CvssScoreVisibility}" Foreground="{Binding CvssColour}" FontWeight="Medium" ToolTip="Double click to copy.">
+                    <Label
+                        Content="Vector String:"
+                        Visibility="{Binding CvssScoreVisibility}"
+                        Foreground="{Binding CvssColour}"
+                        FontWeight="Medium"
+                        ToolTip="Double click to copy.">
                         <Label.InputBindings>
                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CopyToClipboard}"/>
                         </Label.InputBindings>
                     </Label>
-                    <Label  Content="{Binding CvssString}" Visibility="{Binding CvssScoreVisibility}" Foreground="{Binding CvssColour}" FontWeight="Medium" ToolTip="Double click to copy.">
+                    <Label
+                        Content="{Binding CvssString}"
+                        Visibility="{Binding CvssScoreVisibility}" 
+                        Foreground="{Binding CvssColour}" 
+                        FontWeight="Medium" 
+                        ToolTip="Double click to copy.">
                         <Label.InputBindings>
                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CopyToClipboard}"/>
                         </Label.InputBindings>
